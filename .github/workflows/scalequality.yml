@@ -2,13 +2,20 @@ name: ScaleQuality
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 jobs:
   scalequality:
     runs-on: ubuntu-latest
     steps:
+      # The check uploads THIS checkout, so the job must actually have one.
+      # fetch-depth: 0 because the AI durability domain reads git blame history —
+      # a shallow checkout (the default) leaves that domain unmeasured.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: ScaleQuality continuous check
-        run: npx @scalequality/check --token "$SQ_TOKEN" --project 5c429363-db89-4e17-8408-0b5df045f2ef --host https://staging.scalequality.io
+        run: npx @scalequality/check@latest --token "$SQ_TOKEN" --project 5c429363-db89-4e17-8408-0b5df045f2ef --host https://staging.scalequality.io
         env:
           SQ_TOKEN: ${{ secrets.SQ_TOKEN }}
