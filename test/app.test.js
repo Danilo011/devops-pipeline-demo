@@ -22,6 +22,16 @@ describe('devops-pipeline-demo API', () => {
     expect(res.body.error).toBeDefined();
   });
 
+  test.each([
+    { query: { b: 3 }, missingParam: 'a' },
+    { query: { a: 2 }, missingParam: 'b' }
+  ])('GET /sum retorna 400 quando o parametro $missingParam esta ausente', async ({ query }) => {
+    const res = await request(app).get('/sum').query(query);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({ error: 'a e b devem ser numeros' });
+  });
+
   test('GET /info devolve env e version a partir das variaveis de ambiente', async () => {
     process.env.APP_ENV = 'test';
     process.env.APP_VERSION = '1.2.3';
